@@ -42,10 +42,16 @@ jobs:
           make defconfig
           make -j$(nproc) || make -j1 V=s
 
+      - name: List built files
+        run: |
+          echo "=== All bin files ==="
+          find immortalwrt-mt798x/bin -name "*.bin" -o -name "*.img" | head -50
+          echo "=== Targets directory ==="
+          ls -la immortalwrt-mt798x/bin/targets/mediatek/filogic/ || true
+
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: jidu6801-firmware
           path: |
-            immortalwrt-mt798x/bin/targets/mediatek/filogic/*.bin
-            immortalwrt-mt798x/bin/targets/mediatek/filogic/*.img
+            immortalwrt-mt798x/bin/targets/mediatek/filogic/
