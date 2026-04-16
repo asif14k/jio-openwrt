@@ -16,7 +16,6 @@ jobs:
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
           sudo apt-get clean
-          df -h
 
       - name: Install dependencies
         run: |
@@ -25,9 +24,22 @@ jobs:
             gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
             python3-distutils rsync unzip zlib1g-dev file wget
 
+      - name: Cache toolchain
+        uses: actions/cache@v4
+        with:
+          path: |
+            immortalwrt-mt798x/staging_dir
+            immortalwrt-mt798x/build_dir
+            immortalwrt-mt798x/dl
+          key: toolchain-mt7986-${{ hashFiles('config/jidu6801.config') }}
+          restore-keys: |
+            toolchain-mt7986-
+
       - name: Clone ImmortalWrt
         run: |
-          git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
+          if [ ! -d "immortalwrt-mt798x" ]; then
+            git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
+          fi
           cd immortalwrt-mt798x
           ./scripts/feeds update -a
           ./scripts/feeds install -a
@@ -44,14 +56,11 @@ jobs:
 
       - name: List built files
         run: |
-          echo "=== All bin files ==="
-          find immortalwrt-mt798x/bin -name "*.bin" -o -name "*.img" | head -50
-          echo "=== Targets directory ==="
+          find immortalwrt-mt798x/bin -type f \( -name "*.bin" -o -name "*.img" \) 2>/dev/null || true
           ls -la immortalwrt-mt798x/bin/targets/mediatek/filogic/ || true
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: jidu6801-firmware
-          path: |
-            immortalwrt-mt798x/bin/targets/mediatek/filogic/
+          path: immortalwrt-mt798x/bin/targets/mediatek/filogic/
