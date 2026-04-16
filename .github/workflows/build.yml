@@ -24,25 +24,20 @@ jobs:
             gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
             python3-distutils rsync unzip zlib1g-dev file wget
 
-      - name: Cache toolchain
-        uses: actions/cache@v4
-        with:
-          path: |
-            immortalwrt-mt798x/staging_dir
-            immortalwrt-mt798x/build_dir
-            immortalwrt-mt798x/dl
-          key: toolchain-mt7986-${{ hashFiles('config/jidu6801.config') }}
-          restore-keys: |
-            toolchain-mt7986-
-
       - name: Clone ImmortalWrt
         run: |
-          if [ ! -d "immortalwrt-mt798x" ]; then
-            git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
-          fi
+          git clone --depth=1 https://github.com/hanwckf/immortalwrt-mt798x.git
           cd immortalwrt-mt798x
           ./scripts/feeds update -a
           ./scripts/feeds install -a
+
+      - name: Cache dl folder
+        uses: actions/cache@v4
+        with:
+          path: immortalwrt-mt798x/dl
+          key: dl-mt7986-${{ hashFiles('config/jidu6801.config') }}
+          restore-keys: |
+            dl-mt7986-
 
       - name: Copy custom config
         run: |
