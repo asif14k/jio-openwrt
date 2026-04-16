@@ -56,11 +56,13 @@ jobs:
 
       - name: List built files
         run: |
+          echo "=== All firmware files ==="
           find immortalwrt-mt798x/bin -type f \( -name "*.bin" -o -name "*.img" \) 2>/dev/null || true
-          ls -la immortalwrt-mt798x/bin/targets/mediatek/filogic/ || true
+          echo "=== Target directory ==="
+          ls -la immortalwrt-mt798x/bin/targets/mediatek/mt7986/ || true
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: jidu6801-firmware
-          path: immortalwrt-mt798x/bin/targets/mediatek/filogic/
+          path: immortalwrt-mt798x/bin/targets/mediatek/mt7986/
